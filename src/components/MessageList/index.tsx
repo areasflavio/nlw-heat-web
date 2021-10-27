@@ -1,30 +1,45 @@
 import styles from './styles.module.scss';
 
 import logoImg from '../../assets/logo.svg';
+import { useEffect, useState } from 'react';
+import { api } from '../../services/api';
+
+interface Message {
+  id: string;
+  text: string;
+  user: {
+    name: string;
+    avatar_url: string;
+  };
+}
 
 const MessageList: React.FC = () => {
+  const [messages, setMessages] = useState<Message[]>([]);
+
+  useEffect(() => {
+    api
+      .get<Message[]>('/messages/last3')
+      .then((response) => setMessages(response.data));
+
+    console.log(messages);
+  }, []);
+
   return (
     <div className={styles.messageListWrapper}>
       <img src={logoImg} alt="DoWhile 2021" />
 
       <ul className={styles.messageList}>
-        <li className={styles.message}>
-          <p className={styles.messageContent}>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Assumenda
-            temporibus minus neque iste, eligendi asperiores illum accusantium,
-            numquam, illo autem ex quisquam ab cupiditate quibusdam
-            reprehenderit pariatur vel inventore dolorem.
-          </p>
-          <div className={styles.messageUser}>
-            <div className={styles.userImage}>
-              <img
-                src="https://github.com/areasflavio.png"
-                alt="Flávio Arêas"
-              />
+        {messages.map((message) => (
+          <li key={message.id} className={styles.message}>
+            <p className={styles.messageContent}>{message.text}</p>
+            <div className={styles.messageUser}>
+              <div className={styles.userImage}>
+                <img src={message.user.avatar_url} alt={message.user.name} />
+              </div>
+              <span>{message.user.name}</span>
             </div>
-            <span>Flávio Arêas</span>
-          </div>
-        </li>
+          </li>
+        ))}
       </ul>
     </div>
   );
