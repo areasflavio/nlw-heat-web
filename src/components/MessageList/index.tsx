@@ -20,8 +20,6 @@ const MessageList: React.FC = () => {
     api
       .get<Message[]>('/messages/last3')
       .then((response) => setMessages(response.data));
-
-    console.log(messages);
   }, []);
 
   return (
