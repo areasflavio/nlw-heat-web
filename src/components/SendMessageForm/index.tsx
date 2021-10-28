@@ -11,19 +11,22 @@ const SendMessageForm: React.FC = () => {
 
   const [message, setMessage] = useState('');
 
-  const handleSendMessage = useCallback(async (event: FormEvent) => {
-    event.preventDefault();
+  const handleSendMessage = useCallback(
+    async (event: FormEvent) => {
+      event.preventDefault();
 
-    if (!message.trim()) return;
+      if (!message.trim()) return;
 
-    try {
-      await api.post('/messages', { message });
+      try {
+        await api.post('/messages', { message });
 
-      setMessage('');
-    } catch (error) {
-      console.log(error);
-    }
-  }, []);
+        setMessage('');
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    [message]
+  );
 
   return (
     <div className={styles.sendMessageFormWrapper}>

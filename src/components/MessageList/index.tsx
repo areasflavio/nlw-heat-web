@@ -1,8 +1,10 @@
-import styles from './styles.module.scss';
+import { useEffect, useState } from 'react';
+import io from 'socket.io-client';
+
+import { api } from '../../services/api';
 
 import logoImg from '../../assets/logo.svg';
-import { useEffect, useState } from 'react';
-import { api } from '../../services/api';
+import styles from './styles.module.scss';
 
 interface Message {
   id: string;
@@ -13,8 +15,28 @@ interface Message {
   };
 }
 
+const messagesQueue: Message[] = [];
+
+const socket = io('http://localhost:3333');
+
+socket.on('new_message', (newMessage: Message) => {
+  messagesQueue.push(newMessage);
+});
+
 const MessageList: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (messagesQueue.length > 0) {
+        setMessages((prevMessages) =>
+          [messagesQueue[0], prevMessages[0], prevMessages[1]].filter(Boolean)
+        );
+
+        messagesQueue.shift();
+      }
+    }, 3000);
+  }, [messagesQueue]);
 
   useEffect(() => {
     api
