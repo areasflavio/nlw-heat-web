@@ -38,15 +38,21 @@ const AuthProvider = ({ children }: AuthProviderProps) => {
   const signInURL = `https://github.com/login/oauth/authorize?scope=user&client_id=a67bcf93bd6d8f963f92`;
 
   const signIn = useCallback(async (githubCode: string) => {
-    const response = await api.post<AuthResponse>('authenticate', {
-      code: githubCode,
-    });
+    try {
+      const response = await api.post<AuthResponse>('authenticate', {
+        code: githubCode,
+      });
 
-    const { token, user } = response.data;
+      const { token, user } = response.data;
 
-    localStorage.setItem('@DoWhile:token', token);
+      localStorage.setItem('@DoWhile:token', token);
 
-    setUser(user);
+      api.defaults.headers.common.authorization = `Bearer ${token}`;
+
+      setUser(user);
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   const signOut = useCallback(() => {

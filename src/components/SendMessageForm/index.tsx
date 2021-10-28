@@ -1,6 +1,8 @@
-import { useCallback, useContext, useState } from 'react';
+import { FormEvent, useCallback, useContext, useState } from 'react';
 import { VscGithubInverted, VscSignOut } from 'react-icons/vsc';
+
 import { AuthContext } from '../../contexts/auth';
+import { api } from '../../services/api';
 
 import styles from './styles.module.scss';
 
@@ -9,8 +11,18 @@ const SendMessageForm: React.FC = () => {
 
   const [message, setMessage] = useState('');
 
-  const handleSendMessage = useCallback(() => {
-    //
+  const handleSendMessage = useCallback(async (event: FormEvent) => {
+    event.preventDefault();
+
+    if (!message.trim()) return;
+
+    try {
+      await api.post('/messages', { message });
+
+      setMessage('');
+    } catch (error) {
+      console.log(error);
+    }
   }, []);
 
   return (
